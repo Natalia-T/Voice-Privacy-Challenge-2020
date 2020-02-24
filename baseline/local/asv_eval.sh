@@ -70,8 +70,9 @@ if [ ! -f $expo/.done ]; then
   for name in $xvect_enrolls $xvect_trials; do
     [ ! -f $name ] && echo "File $name does not exist" && exit 1
   done
+  #  sed -r 's/_|-/ /g' data/$enrolls/enrolls \| awk '{split($1, val, "_"); ++num[val[1]]}END{for (spk in num) print spk, num[spk]}' \| \
   $train_cmd $expo/log/ivector-plda-scoring.log \
-    sed -r 's/_|-/ /g' data/$enrolls/enrolls \| awk '{split($1, val, "_"); ++num[val[1]]}END{for (spk in num) print spk, num[spk]}' \| \
+    awk '{print $1, "1"}' data/$enrolls/enrolls \| \
       ivector-plda-scoring --normalize-length=true --num-utts=ark:- \
         "ivector-copy-plda --smoothing=0.0 $plda_dir/plda - |" \
         "ark:cut -d' ' -f1 data/$enrolls/enrolls | grep -Ff - $xvect_enrolls | ivector-mean ark:data/$enrolls/spk2utt scp:- ark:- | ivector-subtract-global-mean $plda_dir/mean.vec ark:- ark:- | transform-vec $plda_dir/transform.mat ark:- ark:- | ivector-normalize-length ark:- ark:- |" \
