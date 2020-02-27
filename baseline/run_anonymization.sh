@@ -2,6 +2,11 @@
 
 set -e
 
+#===== begin config =======
+
+nj=$(nproc)
+stage=0
+
 anoni_pool="libritts_train_other_500"
 
 printf -v results '%(%Y-%m-%d-%H-%M-%S)T' -1
@@ -37,12 +42,23 @@ anon_data_suffix=_anon
 
 #=========== end config ===========
 
-#for dset in libri_dev; do
-#for dset in libri_test vctk_dev vctk_test; do
-for dset in libri_dev_anon libri_test_anon vctk_dev_anon vctk_test_anon; do
-  printf "${RED}**ASV: $dset - original vs original**${NC}\n"
-  local/asv_eval.sh --plda_dir $plda_dir --asv_eval_model $asv_eval_model \
-    --enrolls $dset --trials $dset --results $results || exit 1;
+data_netcdf=$(realpath exp/am_nsf_data)   # directory where features for voice anonymization will be stored
+mkdir -p $data_netcdf || exit 1;
+
+for dset in libri_dev libri_test vctk_dev vctk_test; do
+  local/anon/anonymize_data_dir.sh \
+    --nj $nj --anoni-pool $anoni_pool \
+    --data-netcdf $data_netcdf \
+    --ppg-model $ppg_model --ppg-dir $ppg_dir \
+    --xvec-nnet-dir $xvec_nnet_dir \
+    --anon-xvec-out-dir $anon_xvec_out_dir --plda-dir $plda_dir \
+    --pseudo-xvec-rand-level $pseudo_xvec_rand_level --distance $distance \
+    --proximity $proximity --cross-gender $cross_gender \
+    --anon-data-suffix $anon_data_suffix $dset || exit 1;
+  [ ! -f data/$dset/enrolls ] && echo "File data/$dset/enrolls does not exist" && exit 1
+  cp data/$dset/enrolls data/$dset$anon_data_suffix/ || exit 1
+  [ ! -f data/$dset/trials ] && echo "File data/$dset/trials does not exist" && exit 1
+  cp data/$dset/trials data/$dset$anon_data_suffix/ || exit 1
 done
 
 echo Done
