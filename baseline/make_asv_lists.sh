@@ -5,8 +5,7 @@ set -e
 . path.sh
 . cmd.sh
 
-#for dset in libri_dev; do
-for dset in libri_test vctk_dev vctk_test; do
+for dset in libri_dev_f2_anon libri_test_f2_anon vctk_dev_f vctk_dev_f_anon vctk_test_f vctk_test_f_anon; do
   data=data/$dset
   [ -f $data/utt2spk_orig ] && echo "File $data/utt2spk_orig already exist. Restore original data." && exit 1
   [ -f $data/spk2gender_orig ] && echo "File $data/spk2gender_orig already exist. Restore original data." && exit 1
@@ -15,7 +14,7 @@ for dset in libri_test vctk_dev vctk_test; do
   utils/fix_data_dir.sh $data || exit 1
   utils/validate_data_dir.sh --no-feats $data || exit 1
   mv $data/utt2spk $data/utt2spk_orig
-  rm -f $data/enrolls* $data/trials* $data/spk2gender 2> /dev/null
+  rm -f $data/enrolls* $data/trials* 2> /dev/null
   awk '{print $1, $1}' $data/utt2spk_orig > $data/utt2spk
   cp $data/utt2spk $data/spk2utt
   cut -d' ' -f1 $data/utt2spk > $data/enrolls

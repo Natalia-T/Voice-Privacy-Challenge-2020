@@ -2,11 +2,6 @@
 
 set -e
 
-#===== begin config =======
-
-nj=$(nproc)
-stage=0
-
 anoni_pool="libritts_train_other_500"
 
 printf -v results '%(%Y-%m-%d-%H-%M-%S)T' -1
@@ -42,19 +37,16 @@ anon_data_suffix=_anon
 
 #=========== end config ===========
 
-data_netcdf=$(realpath exp/am_nsf_data)   # directory where features for voice anonymization will be stored
-mkdir -p $data_netcdf || exit 1;
-
-for dset in libri_dev_f libri_test_f vctk_dev_f vctk_test_f; do
-  local/anon/anonymize_data_dir.sh \
-    --nj $nj --anoni-pool $anoni_pool \
-    --data-netcdf $data_netcdf \
-    --ppg-model $ppg_model --ppg-dir $ppg_dir \
-    --xvec-nnet-dir $xvec_nnet_dir \
-    --anon-xvec-out-dir $anon_xvec_out_dir --plda-dir $xvector_nnet_1a \
-    --pseudo-xvec-rand-level $pseudo_xvec_rand_level --distance $distance \
-    --proximity $proximity --cross-gender $cross_gender \
-    --anon-data-suffix $anon_data_suffix $dset || exit 1;
+for dset in libri_test_f; do
+  printf "${RED}**ASV: $dset - original vs original**${NC}\n"
+  local/asv_eval.sh --plda_dir $plda_dir --asv_eval_model $asv_eval_model \
+    --enrolls $dset --trials $dset --results $results || exit 1;
+  printf "${RED}**ASV: $dset - original vs anonymized**${NC}\n"
+  local/asv_eval.sh --plda_dir $plda_dir --asv_eval_model $asv_eval_model \
+    --enrolls $dset --trials $dset$anon_data_suffix --results $results || exit 1;
+  printf "${RED}**ASV: $dset - anonymized vs anonymized**${NC}\n"
+  local/asv_eval.sh --plda_dir $plda_dir --asv_eval_model $asv_eval_model \
+    --enrolls $dset$anon_data_suffix --trials $dset$anon_data_suffix --results $results || exit 1;
 done
 
 echo Done

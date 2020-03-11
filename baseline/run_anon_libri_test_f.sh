@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CUDA_VISIBLE_DEVICES=1
+
 set -e
 
 #===== begin config =======
@@ -45,13 +47,13 @@ anon_data_suffix=_anon
 data_netcdf=$(realpath exp/am_nsf_data)   # directory where features for voice anonymization will be stored
 mkdir -p $data_netcdf || exit 1;
 
-for dset in libri_dev_f libri_test_f vctk_dev_f vctk_test_f; do
+for dset in libri_test_f2; do
   local/anon/anonymize_data_dir.sh \
     --nj $nj --anoni-pool $anoni_pool \
     --data-netcdf $data_netcdf \
     --ppg-model $ppg_model --ppg-dir $ppg_dir \
     --xvec-nnet-dir $xvec_nnet_dir \
-    --anon-xvec-out-dir $anon_xvec_out_dir --plda-dir $xvector_nnet_1a \
+    --anon-xvec-out-dir $anon_xvec_out_dir --plda-dir $plda_dir \
     --pseudo-xvec-rand-level $pseudo_xvec_rand_level --distance $distance \
     --proximity $proximity --cross-gender $cross_gender \
     --anon-data-suffix $anon_data_suffix $dset || exit 1;

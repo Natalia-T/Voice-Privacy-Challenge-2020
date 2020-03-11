@@ -37,9 +37,7 @@ anon_data_suffix=_anon
 
 #=========== end config ===========
 
-#for dset in libri_dev; do
-#for dset in libri_test vctk_dev vctk_test; do
-for dset in libri_dev_anon libri_test_anon vctk_dev_anon vctk_test_anon; do
+for dset in vctk_dev; do
   printf "${RED}**ASV: $dset - original vs original**${NC}\n"
   local/asv_eval.sh --plda_dir $plda_dir --asv_eval_model $asv_eval_model \
     --enrolls $dset --trials $dset --results $results || exit 1;
