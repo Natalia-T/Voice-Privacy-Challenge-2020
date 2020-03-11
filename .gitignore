@@ -22,3 +22,15 @@ netcdf*/
 temp*/
 /baseline/libri*
 /baseline/vctk_dev_enrolls_anon*
+/baseline/run_anon_libri_dev_f.sh
+/baseline/run_anon_libri_dev_f.sh
+/baseline/run_anon_vctk_dev_f.sh
+/baseline/run_anon_vctk_test_f.sh
+/baseline/run_asv_libri_dev_f.sh
+/baseline/run_asv_libri_dev_f2.sh
+/baseline/run_asv_libri_test_f2.sh
+/baseline/run_asv_vctk_dev_f.sh
+/baseline/run_asv_vctk_test_f.sh
+/kaldi-orig/
+/kaldi/
+/baseline/data__orig/
