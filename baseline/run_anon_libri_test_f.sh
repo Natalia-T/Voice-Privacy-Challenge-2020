@@ -51,9 +51,9 @@ for dset in libri_test_f2; do
   local/anon/anonymize_data_dir.sh \
     --nj $nj --anoni-pool $anoni_pool \
     --data-netcdf $data_netcdf \
-    --ppg-model $ppg_model --ppg-dir $xvector_nnet_1a \
+    --ppg-model $ppg_model --ppg-dir $ppg_dir \
     --xvec-nnet-dir $xvec_nnet_dir \
-    --anon-xvec-out-dir $anon_xvec_out_dir --plda-dir $plda_dir \
+    --anon-xvec-out-dir $anon_xvec_out_dir --plda-dir $xvector_nnet_1a \
     --pseudo-xvec-rand-level $pseudo_xvec_rand_level --distance $distance \
     --proximity $proximity --cross-gender $cross_gender \
     --anon-data-suffix $anon_data_suffix $dset || exit 1;
