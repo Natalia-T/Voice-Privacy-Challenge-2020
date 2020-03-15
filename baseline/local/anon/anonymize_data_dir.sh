@@ -35,6 +35,8 @@ proximity="farthest"        # nearest/farthest
 
 anon_data_suffix=_anon_${pseudo_xvec_rand_level}_${cross_gender}_${distance}_${proximity}
 
+rand_seed=2020
+
 #=========== end config ===========
 
 . utils/parse_options.sh
@@ -66,7 +68,7 @@ if [ $stage -le 1 ]; then
   printf "${RED}\nStage a.1: Generating pseudo-speakers for ${data_dir}.${NC}\n"
   local/anon/make_pseudospeaker.sh --rand-level ${pseudo_xvec_rand_level} \
       	  --cross-gender ${cross_gender} --distance ${distance} \
-	  --proximity ${proximity} \
+	  --proximity ${proximity} --rand-seed ${rand_seed} \
 	  data/${data_dir} data/${anoni_pool} ${anon_xvec_out_dir} \
 	  ${plda_dir} || exit 1;
 fi
@@ -109,10 +111,10 @@ if [ $stage -le 7 ]; then
   if [ -d "$new_data_dir" ]; then
     rm -rf ${new_data_dir}
   fi
-  #cp -r data/${data_dir} ${new_data_dir}
-  utils/copy_data_dir.sh data/${data_dir} ${new_data_dir} || exit 1
-  # Copy new spk2gender in case cross_gender vc has been done
+  utils/copy_data_dir.sh data/${data_dir} ${new_data_dir}
+  [ -f ${new_data_dir}/feats.scp ] && rm ${new_data_dir}/feats.scp
+  [ -f ${new_data_dir}/vad.scp ] && rm ${new_data_dir}/vad.scp
+    # Copy new spk2gender in case cross_gender vc has been done
   cp ${anon_xvec_out_dir}/xvectors_${data_dir}/pseudo_xvecs/spk2gender ${new_data_dir}/
-  #awk -v p="$wav_path" '{print $1, "sox", p"/"$1".wav", "-t wav -r 16000 -b 16 - |"}' data/${data_dir}/wav.scp > ${new_data_dir}/wav.scp
   awk -v p="$wav_path" '{print $1, "sox", p"/"$1".wav", "-t wav -R -b 16 - |"}' data/${data_dir}/wav.scp > ${new_data_dir}/wav.scp
 fi
