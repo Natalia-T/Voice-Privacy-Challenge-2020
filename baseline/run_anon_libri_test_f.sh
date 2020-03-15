@@ -40,12 +40,14 @@ distance="plda"                           # cosine or plda
 proximity="farthest"                      # nearest or farthest speaker to be selected for anonymization
 
 anon_data_suffix=_anon
-export CUDA_VISIBLE_DEVICES=3
+# export CUDA_VISIBLE_DEVICES=3
 
 #=========== end config ===========
 
 data_netcdf=$(realpath exp/am_nsf_data)   # directory where features for voice anonymization will be stored
 mkdir -p $data_netcdf || exit 1;
+
+rand_seed=0
 
 for dset in libri_test_f libri_test_f2; do
   local/anon/anonymize_data_dir.sh \
@@ -56,7 +58,10 @@ for dset in libri_test_f libri_test_f2; do
     --anon-xvec-out-dir $anon_xvec_out_dir --plda-dir $xvec_nnet_dir \
     --pseudo-xvec-rand-level $pseudo_xvec_rand_level --distance $distance \
     --proximity $proximity --cross-gender $cross_gender \
+    --rand-seed $rand_seed \
     --anon-data-suffix $anon_data_suffix $dset || exit 1;
+
+      rand_seed=$((rand_seed+1))
 done
 
 echo Done
